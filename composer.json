@@ -1,5 +1,5 @@
 {
-    "name": "id-forty-six/curl-wrapper",
+    "name": "id-forty-six/curlwrapper",
     "description": "simplified curl usage",
     "type": "package",
     "require": {
