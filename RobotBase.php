@@ -1,7 +1,7 @@
 <?php
 
 namespace idfortysix\curlwrapper;
- 
+
 /*
  * Robot bazine klase su konfiguracijom...
  */
@@ -47,7 +47,7 @@ abstract class RobotBase {
 	 */
 	public $page;
 
-	protected $charset = "UTF-8";
+	public $charset;
 
 	/**
 	 * pirma karta setinam atsitiktiniu budu, veliau dirbame su tuo paciu - svarbu kai yra sesija
@@ -67,8 +67,6 @@ abstract class RobotBase {
 	 * ar naudoti TOR proxy
 	 */
 	protected $use_proxy;
-
-	protected $force_check_encoding = false;
 
 	protected $debug = false;
 
@@ -148,9 +146,11 @@ abstract class RobotBase {
 			CURLOPT_MAXREDIRS       => 2,                   // stop after x redirects
 			CURLOPT_SSL_VERIFYHOST  => 2,                   // SSL / https
 			CURLOPT_SSL_VERIFYPEER  => false,               // SSL / https
+			CURLOPT_HEADERFUNCTION	=> array($this, 'headerCallback')	// nuskaitome headerius
 		];
-		if ($this->use_proxy) {
-				$this->useProxy();
+		if ($this->use_proxy)
+		{
+			$this->useProxy();
 		}
 		return $this;
 	}
@@ -189,28 +189,6 @@ abstract class RobotBase {
 	}
 
 	/**
-	 * encodingo konvertavimas - pagal tai kas nurodyta konfige, visada i unicoda
-	 */
-	protected function convertEncoding()
-	{
-		if ($this->charset != "UTF-8")
-		{
-			$this->page = iconv($this->charset, "UTF-8", $this->page);
-		}
-		if ($this->force_check_encoding)
-		{
-			// sutvarkome encodinga
-			$page_encoding = mb_detect_encoding($this->page);
-			if (!$page_encoding)
-			{
-					$page_encoding = 'windows-1257';
-			}
-			$this->page = iconv($page_encoding, "UTF-8//IGNORE", $this->page);
-		}
-		return $this;
-	}
-
-	/**
 	 * Jeigu naudojame CURL Proxy, ijungiame sita metoda
 	 */
 	private function useProxy()
@@ -224,17 +202,65 @@ abstract class RobotBase {
 	}
 
 	/**
+	 * encodingo konvertavimas - pagal tai kas nurodyta konfige, visada i unicoda
+	 */
+	protected function convertEncoding()
+	{
+		// sutvarkome encodinga - jeigu nebuvo setintas ish serverio puses, tada parsiname is HTML
+		if (!$this->charset)
+		{
+			$converted = iconv("UTF-8", "UTF-8//TRANSLIT//IGNORE", $this->page);
+			if (preg_match("/content=[\"\']text\/html; charset=([\w\-]+)[\"\']/ium", $converted, $matches))
+			{
+				$this->charset = $matches[1];
+			}
+			elseif (preg_match("/charset=[\"\']([\w\-]+)[\"\']/ium", $converted, $matches))
+			{
+				$this->charset = $matches[1];
+			}
+		}
+		if (!$this->charset)
+		{
+			// jeigu nepavyko rasti per HTML
+			$this->charset = mb_detect_encoding($this->page);
+		}
+		if (!$this->charset)
+		{
+			// jeigu neavyko niekaip kitaip detektinti - defaultas
+			$this->charset = 'UTF-8';
+		}
+		
+		$converted = iconv($this->charset, "UTF-8//TRANSLIT", $this->page);
+		
+		if ($converted === false)
+		{
+			// pakartotinis konvertavimas - su ignore
+			$converted = iconv($this->charset, "UTF-8//TRANSLIT//IGNORE", $this->page);
+		}
+		$this->page = $converted;
+		
+		return $this;
+	}
+
+	/**
 	 * Callback'as kai nuskaitome header'i
 	 */
 	protected function headerCallback($curl, $header)
 	{
 		// saugom cookie
-		if (preg_match('/Set-Cookie: (\w+?)\=(.+?);/iu', $header, $results)) {
-				$this->cookie[ $results[1] ] = $results[2];
+		if (preg_match('/Set-Cookie: (\w+?)\=(.+?);/iu', $header, $results))
+		{
+			$this->cookie[ $results[1] ] = $results[2];
 		}
 		// saugom location
-		if (preg_match('/Location: (.+?)$/iu', $header, $results)) {
-				$this->location = $results[1];
+		if (preg_match('/Location: (.+?)$/iu', $header, $results))
+		{
+			$this->location = $results[1];
+		}
+		// saugom charset
+		if (preg_match('/Content-Type: .+?; charset=(.+?)$/iu', $header, $results))
+		{
+			$this->charset = $results[1];
 		}
 		return strlen($header);
 	}

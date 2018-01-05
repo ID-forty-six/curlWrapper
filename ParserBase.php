@@ -2,22 +2,18 @@
 
 namespace idfortysix\curlwrapper;
  
-define("DATETIME_FORMAT",       'Y-m-d H:i:s');
-define("DAY_SEC",                       60*60*24);
-define("TLDS",
-        "academy|accountants?|apartments|aero|agency|app|archi|associates|audio|bar|auction|best|bike|black|blog|business|cab|xyz|cards|career|cheap|club|coffee|date|design|directory|download|education|fly|gift|global|men|mov|ninja|photos".
-        "|eu|net|com|org|net|biz|info|io|fm|mobi|mobile|museum|gov|name|tv|pro|co|cc|email|edu|tools|guru|london".
-        "|lt|pl|lv|ru|ee|fi|it|by|de|fr|cz|sk|hu|hr|no|me|se|es|uk|dk|nl|ch|be|ua|tr|ge|ie|at|pt|gr|ro|lu|bg|ba|rs|al|mk|am|li|il|si|kz|gb".
-        "|us|ca|as|in|hk|au|ar|is|jp|cn|ae|sg|nz|vn|ir|pk|kr"
-        );
-date_default_timezone_set('Europe/Vilnius');
- 
 /**
  * ParserBase - configai ir bazines funkcijos
  *
  * @author tautvydas
  */
 abstract class ParserBase {
+	
+		const TLDS = 
+        "academy|accountants?|apartments|aero|agency|app|archi|associates|audio|bar|auction|best|bike|black|blog|business|cab|xyz|cards|career|cheap|club|coffee|date|design|directory|download|education|fly|gift|global|men|mov|ninja|photos".
+        "|eu|net|com|org|net|biz|info|io|fm|mobi|mobile|museum|gov|name|tv|pro|co|cc|email|edu|tools|guru|london".
+        "|lt|pl|lv|ru|ee|fi|it|by|de|fr|cz|sk|hu|hr|no|me|se|es|uk|dk|nl|ch|be|ua|tr|ge|ie|at|pt|gr|ro|lu|bg|ba|rs|al|mk|am|li|il|si|kz|gb".
+        "|us|ca|as|in|hk|au|ar|is|jp|cn|ae|sg|nz|vn|ir|pk|kr";
        
         protected $page;
        
@@ -56,13 +52,13 @@ abstract class ParserBase {
                         'PHONEBR'       => "((\+\d{1,3})?\(\d+\s*\d*\)([\s\-]*\d+[\s\-]*)+)",
                         'LETTER'        => "([a-z\p{L}\p{M}]*?)",
                         'ALFANUM'       => "([\w\p{L}\p{M}]*?)",
-                        'EMAILUTF'      => "\b([\w\p{L}\p{M}_\-]+(\.[\w\p{L}\p{M}_\-]+)*@([\w\p{L}\p{M}\-]+\.)*[\w\p{L}\p{M}\-]{2,}\.(".TLDS."))\b",
-                        'EMAIL'         => "\b([\w_\-]+(\.[\w_\-]+)*@([\w\-]+\.)*[\w\-]{2,}\.(".TLDS."))\b",
+                        'EMAILUTF'      => "\b([\w\p{L}\p{M}_\-]+(\.[\w\p{L}\p{M}_\-]+)*@([\w\p{L}\p{M}\-]+\.)*[\w\p{L}\p{M}\-]{2,}\.(".self::TLDS."))\b",
+                        'EMAIL'         => "\b([\w_\-]+(\.[\w_\-]+)*@([\w\-]+\.)*[\w\-]{2,}\.(".self::TLDS."))\b",
                         'STR'           => "(.*?)",
                         'STRWQ'         => "([^\"]+)",
                         'STR1'          => "(.?)",
                         'URL'           => "([\w\s\p{L}\p{M}\/\&\?\%\=\.\,\;\:\-\(\)\'\+\~]+?)",
-                        'DOMAIN'        => "\b(([\w\-]+\.)*[a-z0-9\-]+\.(".TLDS."))\b",
+                        'DOMAIN'        => "\b(([\w\-]+\.)*[a-z0-9\-]+\.(".self::TLDS."))\b",
                         'NR'            => "(\d+)",
                         'LT_MOBILE'     => "((\+370|8)[\s\-\(]{0,3}6[\d\s\-]{2,5}\)?[\s\-]{0,2}[\d\s]{5,8})",
                         'PL_MOBILE'     => "((\+48)?[\s\-\(]{0,3}(50|51|53|57|60|66|69|72|73|78|79|88)[\s\-\)]{0,3}((\d{1}[\s\-]{0,2}\d{3}[\s\-]{0,2}\d{3})|(\d{3}[\s\-]{0,2}\d{2}[\s\-]{0,2}\d{2})))",

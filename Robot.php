@@ -14,20 +14,9 @@ namespace idfortysix\curlwrapper;
 class Robot extends RobotBase
 {
        
-	public function __construct($use_proxy=false, $charset="UTF-8")
+	public function __construct($use_proxy=false)
 	{
 		$this->use_proxy = $use_proxy;
-		$this->charset = $charset;
-	}
-
-	/**
-	 * nuskaitome cookie ish HTTP responso
-	 * @return \Robot
-	 */
-	public function readCookie()
-	{
-		$this->options[CURLOPT_HEADERFUNCTION] = array($this, 'headerCallback');
-		return $this;
 	}
 
 	/**
@@ -85,17 +74,6 @@ class Robot extends RobotBase
 		$this->options[CURLOPT_BINARYTRANSFER] = true;
 		return $this;
 	}
-
-	/**
-	 * patikriname ir konvertuojame encodinga
-	 * @return \Robot
-	 */
-	public function forceEncoding()
-	{
-		$this->force_check_encoding = true;
-		return $this;
-	}
-
 
 	/**
 	 * pagrindine CURL funkcija - vykdo kreipimasi i puslapi
