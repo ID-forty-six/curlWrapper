@@ -10,10 +10,7 @@ namespace idfortysix\curlwrapper;
 abstract class ParserBase {
 	
 		const TLDS = 
-        "academy|accountants?|apartments|aero|agency|app|archi|associates|audio|bar|auction|best|bike|black|blog|business|cab|xyz|cards|career|cheap|club|coffee|date|design|directory|download|education|fly|gift|global|men|mov|ninja|photos".
-        "|eu|net|com|org|net|biz|info|io|fm|mobi|mobile|museum|gov|name|tv|pro|co|cc|email|edu|tools|guru|london".
-        "|lt|pl|lv|ru|ee|fi|it|by|de|fr|cz|sk|hu|hr|no|me|se|es|uk|dk|nl|ch|be|ua|tr|ge|ie|at|pt|gr|ro|lu|bg|ba|rs|al|mk|am|li|il|si|kz|gb".
-        "|us|ca|as|in|hk|au|ar|is|jp|cn|ae|sg|nz|vn|ir|pk|kr";
+        "academy|accountants?|apartments|aero|agency|app|archi|associates|audio|bar|auction|best|bike|black|blog|business|cab|xyz|cards|career|cheap|club|coffee|date|design|directory|download|education|fly|gift|global|men|mov|ninja|photos|eu|net|com|org|net|biz|info|io|fm|mobi|mobile|museum|gov|name|tv|pro|co|cc|email|edu|tools|guru|london|lt|pl|lv|ru|ee|fi|it|by|de|fr|cz|sk|hu|hr|no|me|se|es|uk|dk|nl|ch|be|ua|tr|ge|ie|at|pt|gr|ro|lu|bg|ba|rs|al|mk|am|li|il|si|kz|gb|us|ca|as|in|hk|au|ar|is|jp|cn|ae|sg|nz|vn|ir|pk|kr";
        
         protected $page;
        
