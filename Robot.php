@@ -13,6 +13,8 @@ namespace idfortysix\curlwrapper;
  */
 class Robot extends RobotBase
 {
+	
+	private $console = false;
        
 	public function __construct($use_proxy=false)
 	{
@@ -91,12 +93,15 @@ class Robot extends RobotBase
 		{
 			$this->options[CURLINFO_HEADER_OUT] = true;
 		}
-
-		if (isset($this->options[CURLOPT_POST]))
+		
+		if ($this->console || $this->debug)
 		{
-			echo "post ";
+			if (isset($this->options[CURLOPT_POST]))
+			{
+				echo "post ";
+			}
+			echo date("m-d H:i:s")." ".$this->current_url."\n";
 		}
-		echo date("m-d H:i:s")." ".$this->current_url."\n";
 
 		curl_setopt_array($this->curl, $this->options);
 
@@ -108,7 +113,10 @@ class Robot extends RobotBase
 		if ($err)
 		{
 			$this->last_err = $errmsg;
-			echo("CURL ERR: $err | $errmsg\n");
+			if ($this->console || $this->debug)
+			{
+				echo("CURL ERR: $err | $errmsg\n");
+			}
 		}
 
 		if ($this->debug)
@@ -150,6 +158,15 @@ class Robot extends RobotBase
 	public function setDebug($do_debug=true)
 	{
 		$this->debug = $do_debug;
+		return $this;
+	}
+
+	/*
+	 * Debug outputas "post" ir t.t.
+	 */
+	public function setConsole($do_console=true)
+	{
+		$this->console = $do_console;
 		return $this;
 	}
 
