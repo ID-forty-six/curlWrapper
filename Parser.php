@@ -1,22 +1,22 @@
 <?php
 
 namespace idfortysix\curlwrapper;
- 
+
 /**
  * Description of Parser
  *
  * @author tautvydas
  */
 class Parser extends ParserBase {
-       
-        public function __construct($page, $country="UK", array $extra_patterns=[]) {
+
+        public function __construct($page = "", $country="UK", array $extra_patterns=[]) {
                 parent::__construct();
                 mb_internal_encoding("UTF-8");
                 $this->setPage($page);
                 $this->patterns = $this->patterns + $extra_patterns;
                 $this->setCountryCode($country);
         }
- 
+
         /**
          * pagrindine parsinimo funkcija
          *
@@ -35,28 +35,28 @@ class Parser extends ParserBase {
                 }
                 return null;
         }
-       
+
         public function getPage() {
                 return $this->page;
         }
- 
+
         public function setPage($page) {
                 $this->page = $this->rmNewlinesWhitesp($page);
         }
- 
-       
+
+
         public function setPhoneCityCode($code)
         {
                 $this->city_code = $code;
                 return $this;
         }
-       
+
         public function dropBadPhones($do_drop=true)
         {
                 $this->drop_phones = $do_drop;
                 return $this;
         }
-       
+
         /**
          * Telefonu formatavimas
          * @param type $phones
@@ -117,7 +117,7 @@ class Parser extends ParserBase {
                         return $ret ? $ret : null;
                 }
         }
-       
+
         /**
          * gaunam linkus is duoto WWW puslapio
          * perduodame URL parametra, kad linkus butu galima paversti ish relative i absolute
@@ -169,7 +169,7 @@ class Parser extends ParserBase {
                 }
                 return $res;
         }
-       
+
         /**
          * mb_ucfirst emuliacija
          * @param type $str
@@ -178,7 +178,7 @@ class Parser extends ParserBase {
         {
                 return mb_strtoupper(mb_substr($str, 0, 1), 'UTF-8').mb_substr($str, 1);
         }
-       
+
         /**
          * generuoja SEO linka is paprasto string'o
          * @param type $str
@@ -201,6 +201,5 @@ class Parser extends ParserBase {
                 // pasalinam pirma ir paskutini bruksniukus
                 return preg_replace("/(^\-)|(\-$)/iu", '', $dashed);
         }
- 
- 
+
 }

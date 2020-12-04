@@ -1,44 +1,44 @@
 <?php
 
 namespace idfortysix\curlwrapper;
- 
+
 /**
  * ParserBase - configai ir bazines funkcijos
  *
  * @author tautvydas
  */
 abstract class ParserBase {
-	
-		const TLDS = 
-        "academy|accountants?|apartments|aero|agency|app|archi|associates|audio|bar|auction|best|bike|black|blog|business|cab|xyz|cards|career|cheap|club|coffee|date|design|directory|download|education|fly|gift|global|men|mov|ninja|photos|eu|net|com|org|net|biz|info|io|fm|mobi|mobile|museum|gov|name|tv|pro|co|cc|email|edu|tools|guru|london|lt|pl|lv|ru|ee|fi|it|by|de|fr|cz|sk|hu|hr|no|me|se|es|uk|dk|nl|ch|be|ua|tr|ge|ie|at|pt|gr|ro|lu|bg|ba|rs|al|mk|am|li|il|si|kz|gb|us|ca|as|in|hk|au|ar|is|jp|cn|ae|sg|nz|vn|ir|pk|kr";
-       
+
+	const TLDS = 
+        "academy|accountants?|apartments|aero|agency|app|archi|associates|audio|bar|auction|best|bike|black|blog|business|cab|xyz|online|site|work|cards|career|cheap|club|coffee|date|design|directory|download|education|fly|gift|global|men|mov|ninja|photos|eu|net|com|org|net|biz|info|io|fm|mobi|mobile|museum|gov|name|tv|pro|co|cc|email|edu|tools|guru|london|lt|pl|lv|ru|ee|fi|it|by|de|fr|cz|sk|hu|hr|no|me|se|es|uk|dk|nl|ch|be|ua|tr|ge|ie|at|pt|gr|ro|lu|bg|ba|rs|al|mk|am|li|il|si|kz|gb|us|ca|as|in|hk|au|ar|is|jp|cn|ae|sg|nz|vn|ir|pk|kr";
+
         protected $page;
-       
+
         /*
          * salis - skirta telefonu parsinimui
          */
         protected $country;
         protected $country_code;
-       
+
         protected $city_code    = '';           // Miesto kodas telefonui
         protected $drop_phones  = false;        // ar pasalinti telefonus, kuriu ilgis blogas
-       
+
         protected $skip_links = "jpe?g|png|tiff?|bmp|xcf|gif|docx?|pdf|xlsx?|css|xml|ico|mp3|wav|mpg|avi|swf|iso|zip|js|exe|gz";
-       
+
         /**
          * patternai skirti atpazinti tam tikrus HTML teksto darinius
          * @var type
          */
         protected $patterns;
-       
+
         protected $spamtraps;
-       
+
         /**
          * ar padaryti stringus mazosiomis raidemis
          * @var type
          */
         protected $make_strlower = false;
-       
+
         public function __construct()
         {
                 $this->patterns = [
@@ -118,12 +118,13 @@ abstract class ParserBase {
                         "^report@",
                         "admin@",
                         "emailprovider",
+                        "test@test",
                         "webadmin|hostmaster|domen|visalietuva|sample|pastas|someurl|userinput|pavyzdys|vardas|pavarde|vardenis|pavadinimas|przyklad|adres",
                         "\d{4,}",                                       // su skaiciu deriniais - itartini emailai kur yra is eiles pasikartojantys skaiciai
                         "\d+_?\-?[a-z]+_?\-?\d+"        // skaiciai Raides Skaiciai - itartinas, pasalinam
                 ];
         }
- 
+
         /**
          * pasalinam newlainus ir triminam
          */
@@ -132,7 +133,7 @@ abstract class ParserBase {
                 $str = str_replace(["\n", "\r"], "", $str);
                 return $str;
         }
-       
+
         protected function getPattern($pattern_line) {
                 $str = preg_quote( $this->rmNewlinesWhitesp($pattern_line) );
                 $str = "/".str_replace("/", "\/", $str)."/isu";
@@ -144,7 +145,7 @@ abstract class ParserBase {
                 }
                 return str_replace($search, $replace, $str);
         }
-       
+
         protected function setCountryCode($country){
                 switch($country){
                         case "LT": $this->country_code = "+370"; break;
@@ -154,7 +155,7 @@ abstract class ParserBase {
                 $this->country = $country;
                 return $this;
         }
- 
+
         protected function isPhoneMobile($phone) {
                 switch ($this->country) {
                         case "LT":
@@ -165,7 +166,7 @@ abstract class ParserBase {
                                 return preg_match("/^\+48(50|51|53|57|60|66|69|72|73|78|79|88)/iu", $phone);
                 }
         }
- 
+
         protected function formatPhoneLT($phone) {
                 // Lietuva
                 if (strlen($phone) == 11 && strpos($phone, "370") === 0)
@@ -191,7 +192,7 @@ abstract class ParserBase {
                 }
                 return $phone;
         }
-       
+
         protected function formatPhonePL($phone) {
                 // Lenkija
                 // skaiciu be salies kodo -> 9
@@ -213,7 +214,7 @@ abstract class ParserBase {
                 }
                 return $phone;
         }
-       
+
         protected function formatPhoneUK($phone) {
                 // anglija : telefono numeris gali buti 9 ar 10 skaitmenu + salies kodas
                 // Mobilus numeriai : tik +44 ir 10 skaitmenu
@@ -239,9 +240,8 @@ abstract class ParserBase {
                 }
                 return $phone;
         }
-       
-       
-       
+
+
         /**
          * Gauname domena ir subdomena ish URL
          * @param type $url
@@ -259,7 +259,7 @@ abstract class ParserBase {
                         return $match[0];
                 }
         }
- 
+
         /**
          * email funkcija - pravalome nekorektiskus emailus / spamtrapus
          * t.p. pataisome .co.uk.co.uk
@@ -283,17 +283,17 @@ abstract class ParserBase {
                 }
                 return $emails;
         }
- 
+
         public function make_str_lower($is_lower=true)
         {
                 $this->make_strlower= $is_lower;
                 return $this;
         }
-       
+
         public function arr_to_str(array $arr, $implode_str=", ") {
                 return implode($implode_str, array_unique(array_filter($arr)));
         }
- 
+
         public function str_to_array($str, $delimiter=', ')
         {
                 if ($this->make_strlower)
@@ -307,12 +307,12 @@ abstract class ParserBase {
                 }
                 return array_unique(array_filter($arr));
         }
- 
+
         /*
          * kableliais atskirti elementai - sukergiam ir padarome unikalius
          */
         public function get_str_uniq($str, $delimiter=', ') {
                 return $this->arr_to_str( $this->str_to_array($str, $delimiter), $delimiter);
         }
- 
+
 }
